@@ -89,6 +89,7 @@ interface FormState {
   videoDescription: string;
   filmedWhen: string;
   filmedWhere: string;
+  peopleNames: string[];
   firstName: string;
   lastName: string;
   email: string;
@@ -114,6 +115,7 @@ const initialFormState: FormState = {
   videoDescription: "",
   filmedWhen: "",
   filmedWhere: "",
+  peopleNames: [],
   firstName: "",
   lastName: "",
   email: "",
@@ -145,13 +147,19 @@ export default function MultiStepForm({ onExit }: MultiStepFormProps) {
         title: "Tell us about your video",
         subtitle: "We just need a few quick details to complete your submission.",
         highlight: (
-          <div className="mb-6 flex items-start gap-3 rounded-lg bg-[#dcfce7] px-4 py-3 text-sm text-[#052e16]">
-            <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-[#00c951] text-white">
-              ✓
-            </span>
-            <div>
-              <p className="font-semibold">Your video successfully submitted</p>
-              <p>please fill all the information below to complete your submissions</p>
+          <div className="mb-6 flex items-center gap-4 rounded-lg bg-[#dcfce7] px-4 py-3 text-sm text-[#052e16]">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M0 10C0 4.47715 4.47715 0 10 0C15.5228 0 20 4.47715 20 10C20 15.5228 15.5228 20 10 20C4.47715 20 0 15.5228 0 10Z" fill="#00C951" />
+              <path d="M14.6663 6.5L8.24967 12.9167L5.33301 10" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+
+            <div className="flex flex-col gap-1">
+              <p className="text-sm font-semibold leading-5">
+                Your video successfully submitted
+              </p>
+              <p className="text-sm leading-5">
+                please fill all the informations below to complete your submissions
+              </p>
             </div>
           </div>
         ),
@@ -209,7 +217,7 @@ export default function MultiStepForm({ onExit }: MultiStepFormProps) {
 
   const renderStepOne = () => (
     <div className="flex flex-col gap-6">
-      {headerContent.highlight}
+
       <div className="flex flex-col gap-6">
         <label className="flex flex-col gap-2">
           <span className="text-base font-medium text-[#052e16]">
@@ -255,13 +263,38 @@ export default function MultiStepForm({ onExit }: MultiStepFormProps) {
           <span className="text-base font-medium text-[#052e16]">
             Where was it filmed? <span className="text-[#00c951]">*</span>
           </span>
-          <input
-            type="text"
-            className={baseInputClasses}
-            value={formState.filmedWhere}
-            onChange={handleInputChange("filmedWhere")}
-            placeholder="Search or type address"
-          />
+          <div className="flex items-center gap-3 rounded-lg bg-[#f5f5f5] px-[14px] py-3">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className="text-[#052e16]"
+            >
+              <path
+                d="M9.58334 16.25C13.272 16.25 16.25 13.272 16.25 9.58331C16.25 5.89465 13.272 2.91663 9.58334 2.91663C5.89467 2.91663 2.91666 5.89465 2.91666 9.58331C2.91666 13.272 5.89467 16.25 9.58334 16.25Z"
+                stroke="#052e16"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M17.0833 17.0833L15 15"
+                stroke="#052e16"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            <input
+              type="text"
+              className="w-full bg-transparent text-base text-[#052e16] placeholder:text-[#052e16]/60 focus:outline-none"
+              value={formState.filmedWhere}
+              onChange={handleInputChange("filmedWhere")}
+              placeholder="search or type address"
+            />
+          </div>
         </label>
       </div>
     </div>
@@ -375,18 +408,82 @@ export default function MultiStepForm({ onExit }: MultiStepFormProps) {
             label="No"
             selected={!formState.includesPeople}
             onClick={() =>
-              setFormState((prev) => ({ ...prev, includesPeople: false }))
+              setFormState((prev) => ({
+                ...prev,
+                includesPeople: false,
+                peopleNames: [],
+              }))
             }
           />
           <CheckOption
             label="Yes"
             selected={formState.includesPeople}
             onClick={() =>
-              setFormState((prev) => ({ ...prev, includesPeople: true }))
+              setFormState((prev) => ({
+                ...prev,
+                includesPeople: true,
+                peopleNames: prev.peopleNames.length ? prev.peopleNames : [""],
+              }))
             }
           />
         </div>
       </div>
+      <div className="h-px w-full bg-[#d4d4d4]" />
+      {formState.includesPeople && (
+        <div className="rounded-lg border border-[#d4d4d4] bg-white p-4">
+          <label className="flex flex-col gap-2">
+            <span className="text-base font-medium text-[#052e16]">
+              Please list their first names <span className="text-[#00c951]">*</span>
+            </span>
+            <div className="flex flex-col gap-3">
+              {formState.peopleNames.map((name, index) => (
+                <div key={index} className="flex items-center gap-3">
+                  <input
+                    type="text"
+                    className={`${baseInputClasses} bg-[#f5f5f5] border-[#d4d4d4] focus:bg-white`}
+                    value={name}
+                    onChange={(event) => {
+                      const value = event.target.value;
+                      setFormState((prev) => {
+                        const next = [...prev.peopleNames];
+                        next[index] = value;
+                        return { ...prev, peopleNames: next };
+                      });
+                    }}
+                    placeholder="Michael"
+                  />
+                  <button
+                    type="button"
+                    className="flex h-6 w-6 items-center justify-center rounded-full border border-[#ff3b30] text-[#ff3b30]"
+                    aria-label="Remove person"
+                    onClick={() =>
+                      setFormState((prev) => ({
+                        ...prev,
+                        peopleNames: prev.peopleNames.filter((_, i) => i !== index),
+                      }))
+                    }
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+              <button
+                type="button"
+                className="flex items-center gap-2 text-base font-medium text-[#052e16]"
+                onClick={() =>
+                  setFormState((prev) => ({
+                    ...prev,
+                    peopleNames: [...prev.peopleNames, ""],
+                  }))
+                }
+              >
+                <span className="text-xl">＋</span>
+                Add more
+              </button>
+            </div>
+          </label>
+        </div>
+      )}
       <div className="h-px w-full bg-[#d4d4d4]" />
       <label className="flex flex-col gap-2">
         <span className="text-base font-medium text-[#052e16]">
@@ -558,7 +655,7 @@ export default function MultiStepForm({ onExit }: MultiStepFormProps) {
         background: "linear-gradient(114deg, #CDFEE5 30.62%, #CFF17E 89.55%)",
       }}
     >
-      <header className="w-full border-b border-[rgba(5,46,22,0.1)] bg-white/80 backdrop-blur-sm">
+      <header className="w-full border-b border-[rgba(5,46,22,0.1)] bg-white backdrop-blur-sm">
         <div className="flex items-center justify-between px-5 py-4 md:px-[120px]">
           <button
             type="button"
@@ -574,7 +671,7 @@ export default function MultiStepForm({ onExit }: MultiStepFormProps) {
           {Array.from({ length: 4 }).map((_, index) => (
             <div
               key={index}
-            className={cx(
+              className={cx(
                 "flex-1",
                 index < step ? "bg-[#00c951]" : "bg-[#dcfce7]"
               )}
@@ -583,8 +680,12 @@ export default function MultiStepForm({ onExit }: MultiStepFormProps) {
         </div>
       </header>
 
-      <main className="flex flex-1 justify-center px-6 py-8 md:px-[120px]">
+      <main
+        className="flex flex-1 justify-center px-6 py-8 md:px-[120px]"
+        style={{ background: "var(--color-green-50, #F0FDF4)" }}
+      >
         <div className="w-full max-w-[512px] rounded-2xl bg-white p-6 shadow-sm md:p-8">
+          {step === 1 ? headerContent.highlight : null}
           <div className="flex flex-col gap-2 pb-6">
             <h1 className="text-2xl font-bold text-[#052e16]">{headerContent.title}</h1>
             {headerContent.subtitle && (
@@ -593,6 +694,8 @@ export default function MultiStepForm({ onExit }: MultiStepFormProps) {
               </p>
             )}
           </div>
+
+
           {renderCurrentStep()}
           <div className="mt-8">
             <button type="button" className={buttonBaseClasses} onClick={handleContinue}>
