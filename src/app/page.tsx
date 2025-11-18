@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import UploadSection, { type UploadState } from "@/components/UploadSection";
+import MultiStepForm from "@/components/MultiStepForm";
 
 function Footer() {
   return (
@@ -16,6 +17,7 @@ function Footer() {
 
 export default function Home() {
   const [uploadState, setUploadState] = useState<UploadState>("initial");
+  const [isMultiStepActive, setIsMultiStepActive] = useState(false);
 
   const handleSubmit = (file: File, videoLink?: string) => {
     console.log("File submitted:", file.name);
@@ -28,6 +30,19 @@ export default function Home() {
   const handleUploadStateChange = (state: UploadState) => {
     setUploadState(state);
   };
+
+  const handleSubmissionComplete = () => {
+    setIsMultiStepActive(true);
+  };
+
+  const handleMultiStepExit = () => {
+    setIsMultiStepActive(false);
+    setUploadState("initial");
+  };
+
+  if (isMultiStepActive) {
+    return <MultiStepForm onExit={handleMultiStepExit} />;
+  }
 
   return (
     <div
@@ -148,7 +163,11 @@ export default function Home() {
 
           {/* Primary Actions */}
           <div className="flex flex-col items-start w-full px-0 md:px-0 z-[10]" >
-            <UploadSection onSubmit={handleSubmit} onUploadStateChange={handleUploadStateChange} />
+            <UploadSection
+              onSubmit={handleSubmit}
+              onUploadStateChange={handleUploadStateChange}
+              onSubmitSuccess={handleSubmissionComplete}
+            />
           </div>
         </div>
 

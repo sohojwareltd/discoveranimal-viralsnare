@@ -8,6 +8,7 @@ export type UploadState = "initial" | "uploading" | "completed";
 interface UploadSectionProps {
   onSubmit?: (file: File, videoLink?: string) => void;
   onUploadStateChange?: (state: UploadState) => void;
+  onSubmitSuccess?: () => void;
 }
 
 function ProgressBar({ progress }: { progress: number }) {
@@ -35,7 +36,7 @@ function Spinner() {
   );
 }
 
-export default function UploadSection({ onSubmit, onUploadStateChange }: UploadSectionProps) {
+export default function UploadSection({ onSubmit, onUploadStateChange, onSubmitSuccess }: UploadSectionProps) {
   const [uploadState, setUploadState] = useState<UploadState>("initial");
   
   const updateUploadState = useCallback((newState: UploadState) => {
@@ -126,13 +127,14 @@ export default function UploadSection({ onSubmit, onUploadStateChange }: UploadS
   };
 
   const handleSubmit = async () => {
-    if (!selectedFile) return;
+    if (!selectedFile || uploadState !== "completed") return;
     
     setIsSubmitting(true);
     // Simulate submission
     setTimeout(() => {
       onSubmit?.(selectedFile, videoLink);
       setIsSubmitting(false);
+      onSubmitSuccess?.();
     }, 2000);
   };
 
@@ -319,7 +321,7 @@ export default function UploadSection({ onSubmit, onUploadStateChange }: UploadS
       {/* Submit Button */}
       <button
         onClick={handleSubmit}
-        disabled={isSubmitting}
+        disabled={isSubmitting || uploadState !== "completed" || !selectedFile}
         className="bg-[#bbf451] border border-[#052e16] flex gap-4 items-center justify-center px-6 py-3.5 rounded-full w-full md:w-[560px] max-w-full hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <p className="font-bold text-base leading-6 text-[#052e16] text-center whitespace-pre">
