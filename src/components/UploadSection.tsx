@@ -175,35 +175,34 @@ export default function UploadSection({ onSubmit, onUploadStateChange, onSubmitS
           {/* Or separator */}
           <div className="flex gap-2 items-center justify-center w-full">
             <div className="h-0 w-8 relative">
-              <Image
-                src="/line.svg"
-                alt=""
-                fill
-                className="object-contain"
-              />
+            <div className="w-[32px] h-[1px] relative bg-[#faf5ff]"></div>
             </div>
             <p className="text-sm md:text-base leading-5 md:leading-6 text-[#faf5ff] text-center whitespace-pre">
               or
             </p>
             <div className="h-0 w-8 relative">
-              <Image
-                src="/line.svg"
-                alt=""
-                fill
-                className="object-contain"
-              />
+            <div className="w-[32px] h-[1px] relative bg-[#faf5ff]"></div>
             </div>
           </div>
 
           {/* Select Video Button */}
           <button
             onClick={handleSelectClick}
-            className="flex gap-[10px] items-center justify-center px-4 py-[10px] w-full hover:bg-gray-50 transition-colors cursor-pointer"
+            className="flex gap-[10px] items-center justify-center px-4 py-[10px] w-full transition-colors cursor-pointer"
             style={{
               borderRadius: "var(--radius-full, 9999px)",
               border: "1px solid var(--color-green-950, #052E16)",
               background: "var(--color-white, #FFF)",
               boxShadow: "3px 3px 0 0 #000",
+              transition: "box-shadow 0.18s cubic-bezier(.4, .2, .2, 1), background 0.18s",
+            }}
+            onMouseEnter={e => {
+              (e.currentTarget as HTMLButtonElement).style.boxShadow = "6px 6px 0 0 #000";
+              (e.currentTarget as HTMLButtonElement).style.background = "#BBF451";
+            }}
+            onMouseLeave={e => {
+              (e.currentTarget as HTMLButtonElement).style.boxShadow = "3px 3px 0 0 #000";
+              (e.currentTarget as HTMLButtonElement).style.background = "#FFF";
             }}
           >
             <div className="w-4 h-4 relative">
@@ -323,6 +322,18 @@ export default function UploadSection({ onSubmit, onUploadStateChange, onSubmitS
         onClick={handleSubmit}
         disabled={isSubmitting || uploadState !== "completed" || !selectedFile}
         className="bg-[#bbf451] border border-[#052e16] flex gap-4 items-center justify-center px-6 py-3.5 rounded-full w-full md:w-[560px] max-w-full hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+        style={{
+          boxShadow: "3px 3px 0 0 #000",
+          transition: "box-shadow 0.18s cubic-bezier(.4, .2, .2, 1), background 0.18s",
+        }}
+        onMouseEnter={e => {
+          (e.currentTarget as HTMLButtonElement).style.boxShadow = "6px 6px 0 0 #000";
+          (e.currentTarget as HTMLButtonElement).style.background = "#bbf451";
+        }}
+        onMouseLeave={e => {
+          (e.currentTarget as HTMLButtonElement).style.boxShadow = "3px 3px 0 0 #000";
+          (e.currentTarget as HTMLButtonElement).style.background = "#bbf451";
+        }}
       >
         <p className="font-bold text-base leading-6 text-[#052e16] text-center whitespace-pre">
           {isSubmitting ? "Submitting Video" : "Submit & Get Rewarded"}

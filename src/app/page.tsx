@@ -69,7 +69,7 @@ export default function Home() {
               />
             </div>
             <p className="font-black md:font-bold text-base md:text-xl leading-[20px] md:leading-[22px] text-[#052e16]">
-              Discover Animal
+              Discover <br /> Animal
             </p>
           </div>
           {/* Hamburger menu on mobile, Instagram on desktop */}
@@ -138,7 +138,7 @@ export default function Home() {
               </div>
 
               {/* Arrow decoration - mobile positioning */}
-              <div className="absolute left-[135px] top-[211px] rotate-45 opacity-80 z-10">
+              <div className="absolute left-[117px] top-[211px] rotate-45 opacity-80 z-10">
                 <div className="w-[128px] h-[130px] relative">
                   <Image
                     src="/arrow-part1.svg"
