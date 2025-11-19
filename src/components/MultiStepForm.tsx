@@ -441,7 +441,7 @@ export default function MultiStepForm({ onExit }: MultiStepFormProps) {
           />
         </div>
       </div>
-      <div className="h-px w-full bg-[#d4d4d4]" />
+     
       {formState.includesPeople && (
         <div className="rounded-lg border border-[#d4d4d4] bg-white p-4">
           <label className="flex flex-col gap-2">
@@ -711,10 +711,7 @@ export default function MultiStepForm({ onExit }: MultiStepFormProps) {
 
   return (
     <div
-      className="flex min-h-screen w-full flex-col"
-      style={{
-        background: "linear-gradient(114deg, #CDFEE5 30.62%, #CFF17E 89.55%)",
-      }}
+      className="flex min-h-screen w-full flex-col bg-white md:bg-[linear-gradient(114deg,#CDFEE5_30.62%,#CFF17E_89.55%)]"
     >
       <header className="w-full border-b border-[rgba(5,46,22,0.1)] bg-white backdrop-blur-sm">
         <div className="flex items-center justify-between px-5 py-4 md:px-[120px]">
@@ -742,10 +739,9 @@ export default function MultiStepForm({ onExit }: MultiStepFormProps) {
       </header>
 
       <main
-        className="flex flex-1 justify-center px-6 py-8 md:px-[120px]"
-        style={{ background: "var(--color-green-50, #F0FDF4)" }}
+        className="flex flex-1 justify-center px-6 py-8 md:px-[120px] bg-white md:bg-[#F0FDF4]"
       >
-        <div className="w-full max-w-[512px] rounded-2xl bg-white p-6 shadow-sm md:p-8">
+        <div className="w-full max-w-[512px] p-6 md:rounded-2xl md:bg-white md:shadow-sm md:p-8">
           {step === 1 ? headerContent.highlight : null}
           <div className="flex flex-col gap-2 pb-6">
             <h1 className="text-2xl font-bold text-[#052e16]">{headerContent.title}</h1>
