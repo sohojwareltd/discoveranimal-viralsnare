@@ -31,14 +31,31 @@ function Spinner() {
         fill
         className="object-contain animate-spin"
       />
-    
+
     </div>
+  );
+}
+
+function DisabledButton({ children }: { children: React.ReactNode }) {
+  return (
+    <button
+      disabled={true}
+      className="bg-[#bbf451] border border-[#052e16] flex gap-4 items-center justify-center px-6 py-3.5 rounded-full w-full md:w-[560px] max-w-full disabled:opacity-10 disabled:cursor-not-allowed"
+      style={{
+        boxShadow: "3px 3px 0 0 #000",
+        transition: "box-shadow 0.18s cubic-bezier(.4, .2, .2, 1), background 0.18s",
+      }}
+    >
+      <p className="font-bold text-base leading-6 text-[#052e16] text-center whitespace-pre">
+        {children}
+      </p>
+    </button>
   );
 }
 
 export default function UploadSection({ onSubmit, onUploadStateChange, onSubmitSuccess }: UploadSectionProps) {
   const [uploadState, setUploadState] = useState<UploadState>("initial");
-  
+
   const updateUploadState = useCallback((newState: UploadState) => {
     setUploadState(newState);
     onUploadStateChange?.(newState);
@@ -72,7 +89,7 @@ export default function UploadSection({ onSubmit, onUploadStateChange, onSubmitS
       setUploadedBytes((prev) => {
         const newValue = Math.min(prev + file.size / 50, file.size);
         setUploadProgress((newValue / file.size) * 100);
-        
+
         if (newValue >= file.size) {
           clearInterval(interval);
           setTimeout(() => {
@@ -97,7 +114,7 @@ export default function UploadSection({ onSubmit, onUploadStateChange, onSubmitS
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragOver(false);
-    
+
     const files = e.dataTransfer.files;
     if (files.length > 0 && files[0].type.startsWith("video/")) {
       simulateUpload(files[0]);
@@ -128,7 +145,7 @@ export default function UploadSection({ onSubmit, onUploadStateChange, onSubmitS
 
   const handleSubmit = async () => {
     if (!selectedFile || uploadState !== "completed") return;
-    
+
     setIsSubmitting(true);
     // Simulate submission
     setTimeout(() => {
@@ -143,9 +160,8 @@ export default function UploadSection({ onSubmit, onUploadStateChange, onSubmitS
     return (
       <div className="flex flex-col gap-3 items-start w-full">
         <div
-          className={`bg-[#615fff] border-2 border-[#052e16] border-dashed flex flex-col gap-3 h-[216px] md:h-[240px] items-center justify-center px-8 md:px-10 py-9 rounded-lg w-full ${
-            isDragOver ? "border-solid" : ""
-          }`}
+          className={`bg-[#615fff] border-2 border-[#052e16] border-dashed flex flex-col gap-3 h-[216px] md:h-[240px] items-center justify-center px-8 md:px-10 py-9 rounded-lg w-full ${isDragOver ? "border-solid" : ""
+            }`}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
@@ -157,7 +173,7 @@ export default function UploadSection({ onSubmit, onUploadStateChange, onSubmitS
             onChange={handleFileSelect}
             className="hidden"
           />
-          
+
           <div className="flex flex-col gap-2 items-center w-full">
             <div className="w-8 h-8 relative">
               <Image
@@ -175,13 +191,13 @@ export default function UploadSection({ onSubmit, onUploadStateChange, onSubmitS
           {/* Or separator */}
           <div className="flex gap-2 items-center justify-center w-full">
             <div className="h-0 w-8 relative">
-            <div className="w-[32px] h-[1px] relative bg-[#faf5ff]"></div>
+              <div className="w-[32px] h-[1px] relative bg-[#faf5ff]"></div>
             </div>
             <p className="text-sm md:text-base leading-5 md:leading-6 text-[#faf5ff] text-center whitespace-pre">
               or
             </p>
             <div className="h-0 w-8 relative">
-            <div className="w-[32px] h-[1px] relative bg-[#faf5ff]"></div>
+              <div className="w-[32px] h-[1px] relative bg-[#faf5ff]"></div>
             </div>
           </div>
 
@@ -226,7 +242,11 @@ export default function UploadSection({ onSubmit, onUploadStateChange, onSubmitS
             <span> Raw clips get selected 3× more often! No edits, no filters — just your pet&apos;s natural actions. 🐾</span>
           </p>
         </div>
+        <DisabledButton>
+          Submit & Get Rewarded
+        </DisabledButton>
       </div>
+
     );
   }
 
@@ -256,6 +276,9 @@ export default function UploadSection({ onSubmit, onUploadStateChange, onSubmitS
             </div>
           </div>
         </div>
+        <DisabledButton>
+          Submit & Get Rewarded
+        </DisabledButton>
       </div>
     );
   }

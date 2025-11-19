@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useMemo, useState } from "react";
 
 const cx = (...classes: Array<string | false | null | undefined>) =>
@@ -57,11 +58,26 @@ interface CheckboxFieldProps {
   checked: boolean;
   onChange: (value: boolean) => void;
   html?: boolean;
+  onTermsClick?: (type: "service" | "submission") => void;
 }
 
-function CheckboxField({ label, checked, onChange, html }: CheckboxFieldProps) {
+function CheckboxField({ label, checked, onChange, html, onTermsClick }: CheckboxFieldProps) {
+  const handleLabelClick = (e: React.MouseEvent) => {
+    const target = e.target as HTMLElement;
+    // Check if clicked element or its parent is a terms link
+    const termsLink = target.closest('.terms-link') as HTMLElement;
+    if (termsLink) {
+      e.preventDefault();
+      e.stopPropagation();
+      const termsType = termsLink.getAttribute("data-terms-type");
+      if (termsType === "service" || termsType === "submission") {
+        onTermsClick?.(termsType as "service" | "submission");
+      }
+    }
+  };
+
   return (
-    <label className="flex items-start gap-3 text-base text-[#052e16]">
+    <label className="flex items-start gap-3 text-base text-[#052e16]" onClick={handleLabelClick}>
       <input
         type="checkbox"
         className="mt-1 h-4 w-4 rounded border-[#d4d4d4] text-[#052e16] focus:ring-[#00c951]"
@@ -103,6 +119,8 @@ interface FormState {
   companyName: string;
   sharedElsewhere: string;
   otherPlatform: string;
+  howDidYouSubmit: string;
+  anythingElse: string;
   agreedTerms: boolean;
   agreedSubmission: boolean;
   certifyRights: boolean;
@@ -127,8 +145,10 @@ const initialFormState: FormState = {
   filmedBy: "I filmed it",
   companyAsked: true,
   companyName: "",
-  sharedElsewhere: "Yes, I submitted it through a website or form before",
+  sharedElsewhere: "No, this is the first place I'm submitting it",
   otherPlatform: "",
+  howDidYouSubmit: "",
+  anythingElse: "",
   agreedTerms: true,
   agreedSubmission: true,
   certifyRights: true,
@@ -140,6 +160,7 @@ export default function MultiStepForm({ onExit }: MultiStepFormProps) {
   const [step, setStep] = useState<Step>(1);
   const [formState, setFormState] = useState<FormState>(initialFormState);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [termsModal, setTermsModal] = useState<"service" | "submission" | null>(null);
 
   const headerContent = useMemo(() => {
     if (step === 1) {
@@ -264,29 +285,7 @@ export default function MultiStepForm({ onExit }: MultiStepFormProps) {
             Where was it filmed? <span className="text-[#00c951]">*</span>
           </span>
           <div className="flex items-center gap-3 rounded-lg bg-[#f5f5f5] px-[14px] py-3">
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 20 20"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              className="text-[#052e16]"
-            >
-              <path
-                d="M9.58334 16.25C13.272 16.25 16.25 13.272 16.25 9.58331C16.25 5.89465 13.272 2.91663 9.58334 2.91663C5.89467 2.91663 2.91666 5.89465 2.91666 9.58331C2.91666 13.272 5.89467 16.25 9.58334 16.25Z"
-                stroke="#052e16"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M17.0833 17.0833L15 15"
-                stroke="#052e16"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <Image src="/search.svg" alt="search" width={25} height={25} />
             <input
               type="text"
               className="w-full bg-transparent text-base text-[#052e16] placeholder:text-[#052e16]/60 focus:outline-none"
@@ -349,6 +348,7 @@ export default function MultiStepForm({ onExit }: MultiStepFormProps) {
           onChange={handleInputChange("confirmEmail")}
         />
       </label>
+      <div className="h-px w-full bg-[#e5e5e5]" />
       <label className="flex flex-col gap-2">
         <span className="text-base font-medium text-[#052e16]">
           What’s your phone number?
@@ -363,22 +363,35 @@ export default function MultiStepForm({ onExit }: MultiStepFormProps) {
           onChange={handleInputChange("phone")}
         />
       </label>
+      <div className="h-px w-full bg-[#e5e5e5]" />
       <label className="flex flex-col gap-2">
         <span className="text-base font-medium text-[#052e16]">
           How old are you? <span className="text-[#00c951]">*</span>
         </span>
-        <select
-          className={cx(baseInputClasses, "appearance-none")}
-          value={formState.age}
-          onChange={handleInputChange("age")}
-        >
-          <option>Under 13</option>
-          <option>13-17</option>
-          <option>18-24</option>
-          <option>25-34</option>
-          <option>35+</option>
-        </select>
+        <div className="relative w-full">
+          <select
+            className={cx(baseInputClasses, "appearance-none pr-10")}
+            value={formState.age}
+            onChange={handleInputChange("age")}
+          >
+            <option>Under 13</option>
+            <option>13-17</option>
+            <option>18-24</option>
+            <option>25-34</option>
+            <option>35+</option>
+          </select>
+          <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+            <Image
+              src="/dropdown.svg"
+              alt=""
+              width={24}
+              height={24}
+              className="object-contain"
+            />
+          </div>
+        </div>
       </label>
+      <div className="h-px w-full bg-[#e5e5e5]" />
       <label className="flex flex-col gap-2">
         <span className="text-base font-medium text-[#052e16]">
           What’s your social media @username?
@@ -547,16 +560,28 @@ export default function MultiStepForm({ onExit }: MultiStepFormProps) {
             This includes emailing it, submitting a form, signing with a company, or posting to a licensing platform
           </span>
         </label>
-        <select
-          className={cx(baseInputClasses, "appearance-none mt-3")}
-          value={formState.sharedElsewhere}
-          onChange={handleInputChange("sharedElsewhere")}
-        >
-          <option>No, this is the first place I’m submitting it</option>
-          <option>Yes, I submitted it through a website or form before</option>
-          <option>Yes, I emailed it to someone</option>
-        </select>
-        {formState.sharedElsewhere !== "No, this is the first place I’m submitting it" && (
+        <div className="relative w-full mt-3">
+          <select
+            className={cx(baseInputClasses, "appearance-none pr-10")}
+            value={formState.sharedElsewhere}
+            onChange={handleInputChange("sharedElsewhere")}
+          >
+            <option>No, this is the first place I'm submitting it</option>
+            <option>Yes, I submitted it through a website or form before</option>
+            <option>Yes, I allowed someone else to use it, but I still own the rights</option>
+            <option>Yes, I gave full rights to another company (exclusive)</option>
+          </select>
+          <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+            <Image
+              src="/dropdown.svg"
+              alt=""
+              width={24}
+              height={24}
+              className="object-contain"
+            />
+          </div>
+        </div>
+        {formState.sharedElsewhere === "Yes, I submitted it through a website or form before" && (
           <div className="mt-4 rounded-lg border border-[#d4d4d4] bg-white p-4">
             <label className="flex flex-col gap-2">
               <span className="text-base font-medium text-[#052e16]">
@@ -571,6 +596,40 @@ export default function MultiStepForm({ onExit }: MultiStepFormProps) {
             </label>
           </div>
         )}
+        {formState.sharedElsewhere === "Yes, I allowed someone else to use it, but I still own the rights" && (
+          <div className="mt-4 rounded-lg border border-[#d4d4d4] bg-white p-4">
+            <label className="flex flex-col gap-2">
+              <div className="flex flex-col gap-[2px]">
+                <span className="text-base font-medium text-[#052e16]">
+                  How did you submit it? <span className="text-[#00c951]">*</span>
+                </span>
+                <span className="text-sm text-[#052e16] opacity-60">
+                  Form, DM, email, etc
+                </span>
+              </div>
+              <input
+                type="text"
+                className={baseInputClasses}
+                value={formState.howDidYouSubmit}
+                onChange={handleInputChange("howDidYouSubmit")}
+              />
+            </label>
+          </div>
+        )}
+        {formState.sharedElsewhere === "Yes, I gave full rights to another company (exclusive)" && (
+          <div className="mt-4 rounded-lg border border-[#d4d4d4] bg-white p-4">
+            <label className="flex flex-col gap-2">
+              <span className="text-base font-medium text-[#052e16]">
+                Anything else we should know? <span className="text-[#00c951]">*</span>
+              </span>
+              <textarea
+                className={textareaClasses}
+                value={formState.anythingElse}
+                onChange={handleInputChange("anythingElse")}
+              />
+            </label>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -579,18 +638,20 @@ export default function MultiStepForm({ onExit }: MultiStepFormProps) {
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-4">
         <CheckboxField
-          label={`I agree to the <span class="underline font-semibold">Terms of Service</span>.`}
+          label={`I agree to the <span class="underline font-semibold terms-link cursor-pointer" data-terms-type="service">Terms of Service</span>.`}
           checked={formState.agreedTerms}
           onChange={(value) => setFormState((prev) => ({ ...prev, agreedTerms: value }))}
           html
+          onTermsClick={setTermsModal}
         />
         <CheckboxField
-          label={`I agree to the <span class="underline font-semibold">Terms of Submission</span>.`}
+          label={`I agree to the <span class="underline font-semibold terms-link cursor-pointer" data-terms-type="submission">Terms of Submission</span>.`}
           checked={formState.agreedSubmission}
           onChange={(value) =>
             setFormState((prev) => ({ ...prev, agreedSubmission: value }))
           }
           html
+          onTermsClick={setTermsModal}
         />
         <CheckboxField
           label="I certify that I am the rights holder or have authority to grant rights to this video, and that all information I provided is accurate."
@@ -624,7 +685,7 @@ export default function MultiStepForm({ onExit }: MultiStepFormProps) {
       </label>
       <div>
         <p className="text-sm text-[#052e16]">Signature Preview</p>
-        <div className="mt-2 rounded-lg bg-[#f0fdf4] px-4 py-6 text-center font-['Alex_Brush',cursive] text-2xl text-[#052e16]">
+        <div className="mt-2 rounded-lg bg-[#f0fdf4] px-4 py-6 text-center text-[32px] text-[#052e16]" style={{ fontFamily: 'var(--font-alex-brush), cursive' }}>
           {formState.signature || "Sample Signature"}
         </div>
       </div>
@@ -707,7 +768,7 @@ export default function MultiStepForm({ onExit }: MultiStepFormProps) {
 
       {showSuccess && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-          <div className="relative w-full max-w-[360px] rounded-2xl bg-white px-8 pb-10 pt-8 text-center shadow-lg">
+          <div className="relative w-full max-w-[360px] rounded-2xl bg-white px-8 pb-10 pt-8 text-center shadow-lg animate-slide-up">
             <button
               type="button"
               className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full bg-[#052e16] text-white transition-opacity hover:opacity-80"
@@ -736,6 +797,62 @@ export default function MultiStepForm({ onExit }: MultiStepFormProps) {
             >
               Submit another video
             </button>
+          </div>
+        </div>
+      )}
+
+      {termsModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+          <div className="relative w-full max-w-[800px] max-h-[90vh] rounded-2xl bg-white flex flex-col shadow-lg animate-slide-up">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-[#e5e5e5]">
+              <h2 className="text-xl font-semibold text-[#052e16]">
+                {termsModal === "service" ? "Terms Of Services" : "Terms Of Submission"}
+              </h2>
+              <button
+                type="button"
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-[#052e16] text-white transition-opacity hover:opacity-80"
+                onClick={() => setTermsModal(null)}
+                aria-label="Close"
+              >
+                ×
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto px-5 py-6">
+              <div className="flex flex-col gap-5">
+                <div className="flex flex-col gap-3">
+                  <h3 className="text-sm font-semibold text-[#052e16]">User Submissions</h3>
+                  <div className="text-sm text-[#71717b] text-justify leading-5 space-y-3">
+                    <p>
+                      By posting, uploading or submitting User Submissions to the Site, you are agreeing to these Terms of Service, the ViralSnare licensing terms (including the grant of Licensed Rights) and the user representations and warranties in connection with the User Submissions as further set forth below. In particular, you are representing and warranting that you own or control all rights to the User Submissions, including the requisite clearances, releases and authorizations for the use of any content, likeness, music tracks or other materials contained, included or depicted in the User Submissions.
+                    </p>
+                    <p>
+                      In accordance with the Acceptability Guidelines, no ViralSnare user, including without limitation its members, shall post, upload or submit User Submissions which include any of the following: (i) invasion of privacy/publicity, including content which reveals the personal information of a third party; (ii) violence or physical abuse of any kind; (iii) defamation, slander or libel; (iv) illegal activities of any kind; (v) depictions of discrimination or discriminatory content; (vi) fraudulent or misleading content (including tags, titles and descriptions); (vii) pornographic, lewd or sexually explicit content; (viii) content which is clearly inappropriate for children; (ix) content involving harassment, intimidation, threats and other inappropriate predatory behavior; (x) content which is intended to disgust or shock; (xi) and intellectual property or other proprietary content or rights belonging to third parties, including without limitation the use of any third party likeness for which the user has failed to obtain the requisite releases, clearances and authorizations.
+                    </p>
+                    <p>
+                      We reserve the right to remove any User Submissions for any reason, particularly if the User Submissions contain(s) any content in violation of these Acceptability Guidelines or which we otherwise deem to be inappropriate or unacceptable. We further reserve the right to terminate your ViralSnare membership and/or your access to the Site based on the seriousness or repeated nature of such violative, inappropriate or unacceptable User Submissions.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex flex-col gap-3">
+                  <h3 className="text-sm font-semibold text-[#052e16]">Termination Clause</h3>
+                  <p className="text-sm text-[#71717b] text-justify leading-5">
+                    I understand that participation in the ViralSnare video system is at will and you agree that this license may only be terminated by mutual agreement between all the parties.
+                  </p>
+                </div>
+                <div className="flex flex-col gap-3">
+                  <h3 className="text-sm font-semibold text-[#052e16]">Ownership; License and Granted Rights to User Submissions</h3>
+                  <p className="text-sm text-[#71717b] text-justify leading-5">
+                    Upon uploading, submitting, emailing, posting, publishing or otherwise transmitting any User Submissions to the Site, you retain ownership of any intellectual property rights you hold in and to the User Submissions; however, you grant ViralSnare an exclusive, worldwide, assignable and sublicensable, perpetual and irrevocable right and license to use, reproduce, modify, adapt, rearrange, promote, market, prepare derivative works based on, perform, display, publish, distribute, transmit, stream, broadcast and otherwise exploit such User Submissions in any form, method, medium, platform or technology now known or later developed, including without limitation on the Site and third party websites, podcast, video game consoles and services, mobile apps, video-on-demand and television (the "Licensed Rights"). ViralSnare shall further be granted the right to assign at their discretion the Licensed Rights in accordance with these Terms of Service. You represent and warrant that you own or have the necessary licenses, rights, consents, and permissions to grant the foregoing Licensed Rights to ViralSnare and you further license to us all patent, trademark, trade secret, copyright or other proprietary rights in and to such User Submissions. You acknowledge and agree that we shall own all rights, title and interest in and to all derivative works and compilations of User Submissions that are created by us, including without limitation all worldwide intellectual property rights therein. You agree to execute and deliver such documents and provide all assistance reasonably requested by us, at our expense, to give us the full benefit of these Terms of Service, including without limitation the License Agreement. You acknowledge that you are solely responsible for all User Submissions you upload, post or otherwise transmit using this Site. We do not endorse any User Submissions or any information, opinion, recommendation, or advice expressed therein. You represent and warrant that any User Submissions posted, uploaded or submitted by you are original to you and/or that you own and/or control all of the materials, content, and intellectual property contained therein, including without limitation the necessary licenses, releases, rights, consents, and permissions to grant ViralSnare the Licensed Rights and all other rights and licenses set forth in this Terms of Service agreement. Without limiting the foregoing, you represent and warrant that you have obtained the written consent, release and/or permission of each person who is identifiable in each of your User Submissions to use the name and likeness of each such person in your User Submissions in the manner contemplated by these terms. You further represent and warrant that your User Submissions (i) do not and will not, directly or indirectly, violate, infringe or breach any duty toward or rights of any person or entity, including without limitation any copyright, trademark, service mark, trade secret, other intellectual property, publicity or privacy right and will not require any costs or payments for their use by ViralSnare or its licensees and assignees; (ii) are not fraudulent, misleading, tortuous, defamatory, slanderous, libelous, abusive, violent, threatening or obscene; (iii) do not harass others, promote bigotry, racism, hatred or harm against any individual or group, promote discrimination based on race, sex, religion, nationality, sexual orientation or age; (iv) are not illegal and do not promote illegal or harmful activities or substances; (v) do not contain any computer programming routines or viruses (including without limitation: time bombs, Trojan Horses, worms, Easter Eggs, drop dead devices or cancelbots) that are intended to damage, interfere with, intercept or expropriate any system data or personal information, permit unauthorized access to the Site or disable, damage or erase any portion of the Content stored therein; and/or (vi) do not otherwise violate the ViralSnare Acceptability Guidelines.
+                  </p>
+                </div>
+                <div className="flex flex-col gap-3">
+                  <h3 className="text-sm font-semibold text-[#052e16]">Payment to Copyright holder for License</h3>
+                  <p className="text-sm text-[#71717b] text-justify leading-5">
+                    Licensee will pay to Licensor 60% of the profit actually received from the Work (the "Payment(s)"). Licensee shall process the Payment to Licensor within fifteen (15) days after the end of each month; however, if the amount owed Licensor is less than fifty US dollars ($50 USD) in any given month, Licensee reserves the right to carry the Payment over until the amount exceeds fifty US dollars ($50 USD). If the amount never exceeds fifty US dollars ($50 USD) or if the Licensee ceases license acquisition operations, then no Payment will come due. Licensee will have no obligation to make any Payments which are reasonably suspected by Licensee, in its sole discretion, to have resulted from fraudulent, misleading or false activities by Licensor. Licensee shall not be responsible for any payments to Licensor for revenue earned in connection with the Licensed Rights but not received by Licensee for any reason (for example due to non-payment or where Licensee does not receive adequate reporting so as to enable Licensee to assign revenue). Licensor may choose to be paid via PayPal, paper check, or electronic bank transfer (the "Payment Method"). Any electronic bank transfer fees will be deducted from the Licensor's Payment prior to sending. Licensor agrees to provide Licensee all the necessary and accurate information required to process payment (the "Payment Details') via their preferred Payment Method. Licensor further understands that Payments may be subject to Withholding Tax which will be paid on behalf of Licensor to the appropriate Tax Authority.
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}

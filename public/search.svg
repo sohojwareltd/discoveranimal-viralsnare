@@ -1,0 +1,23 @@
+   <svg
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className="text-[#052e16]"
+            >
+              <path
+                d="M9.58334 16.25C13.272 16.25 16.25 13.272 16.25 9.58331C16.25 5.89465 13.272 2.91663 9.58334 2.91663C5.89467 2.91663 2.91666 5.89465 2.91666 9.58331C2.91666 13.272 5.89467 16.25 9.58334 16.25Z"
+                stroke="#052e16"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M17.0833 17.0833L15 15"
+                stroke="#052e16"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
