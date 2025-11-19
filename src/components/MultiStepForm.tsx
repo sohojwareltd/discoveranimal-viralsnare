@@ -14,7 +14,7 @@ const baseInputClasses =
 const textareaClasses = cx(baseInputClasses, "min-h-[96px] resize-none leading-6");
 
 const buttonBaseClasses =
-  "w-full rounded-full border border-green-950 bg-lime-300 px-6 py-3.5 text-center font-bold text-base text-green-950 transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-950 shadow-[3px_3px_0_0_#000]";
+  "w-full rounded-full border border-green-950 bg-lime-300 px-6 py-3.5 text-center font-bold text-base text-green-950 transition-all duration-200 hover:opacity-90 hover:shadow-[6px_6px_0_0_#000] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-950 shadow-[3px_3px_0_0_#000]";
 
 interface CheckOptionProps {
   label: string;
